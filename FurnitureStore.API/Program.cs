@@ -1,8 +1,10 @@
 using System.Text;
 using FurnitureStore.API.Configuration;
+using FurnitureStore.API.Services;
 using FurnitureStore.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -50,7 +52,13 @@ builder.Services.AddDbContext<FurnitureStoreContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("FurnitureStoreContext"));
 });
 
+//IOptions
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+
+//Emails
+builder.Services.AddSingleton<IEmailSender, EmaiService>();
+
 
 builder.Services.AddAuthentication(options =>
 {
