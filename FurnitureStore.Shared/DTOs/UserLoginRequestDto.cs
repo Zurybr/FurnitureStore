@@ -7,11 +7,8 @@ using System.Threading.Tasks;
 
 namespace FurnitureStore.Shared.DTOs
 {
-    public class UserRegistrationRequestDto
+    public class UserLoginRequestDto
     {
-        [Required]
-        [MaxLength(250,ErrorMessage = "Name can't have more than 250 characters")]
-        public string Name { get; set; }
         [Required]
         public string Email { get; set; }
         [Required]

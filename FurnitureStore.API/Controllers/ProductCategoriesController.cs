@@ -1,5 +1,6 @@
 ﻿using FurnitureStore.Data;
 using FurnitureStore.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,7 @@ namespace FurnitureStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProductCategoriesController : ControllerBase
     {
         private readonly FurnitureStoreContext _context;
