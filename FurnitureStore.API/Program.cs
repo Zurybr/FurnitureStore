@@ -53,12 +53,24 @@ builder.Services.AddDbContext<FurnitureStoreContext>(options =>
 });
 
 //IOptions
-builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
+builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConnfig"));
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 
 //Emails
 builder.Services.AddSingleton<IEmailSender, EmaiService>();
 
+var key = Encoding.ASCII.GetBytes((builder.Configuration.GetSection("JwtConnfig:Secret").Value));
+var tokenValidationParameters = new TokenValidationParameters()
+{
+    ValidateIssuerSigningKey = true, //siempre validar el token
+    IssuerSigningKey = new SymmetricSecurityKey(key), //esta es la key de la validacion de la linea de arriba,
+    ValidateIssuer = false, //solo en dev, en prod es true
+    ValidateAudience =
+        false, //solo en dev, en prod es true hay que validar quien era el destinatario, no puede usar el token en ningun otro lado
+    RequireExpirationTime = false, //falso hasta hacer el refresh token
+    ValidateLifetime = true //validara el tiempo de vida
+};
+builder.Services.AddSingleton(tokenValidationParameters);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -67,18 +79,8 @@ builder.Services.AddAuthentication(options =>
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(jwt =>
 {
-    var key = Encoding.ASCII.GetBytes((builder.Configuration.GetSection("JwtConfig:Secret").Value));
     jwt.SaveToken = true; //almacena el token si la auth es exitosa
-    jwt.TokenValidationParameters = new TokenValidationParameters()
-    {
-        ValidateIssuerSigningKey = true, //siempre validar el token
-        IssuerSigningKey = new SymmetricSecurityKey(key), //esta es la key de la validacion de la linea de arriba,
-        ValidateIssuer = false, //solo en dev, en prod es true
-        ValidateAudience =
-            false, //solo en dev, en prod es true hay que validar quien era el destinatario, no puede usar el token en ningun otro lado
-        RequireExpirationTime = false, //falso hasta hacer el refresh token
-        ValidateLifetime = true //validara el tiempo de vida
-    };
+    jwt.TokenValidationParameters = tokenValidationParameters;
 });
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>options.SignIn.RequireConfirmedAccount =false)
