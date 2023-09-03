@@ -28,21 +28,24 @@ namespace FurnitureStore.API.Controllers
         private readonly IEmailSender _emailSender;
         private readonly FurnitureStoreContext _context;
         private readonly TokenValidationParameters _tokenValidationParameters;
+        private readonly ILogger<AuthenticationController> _logger;
 
 
         public AuthenticationController(UserManager<IdentityUser> userManager, IOptions<JwtConfig> jwtConfig,
-            IEmailSender emailSender, FurnitureStoreContext context, TokenValidationParameters tokenValidationParameters)
+            IEmailSender emailSender, FurnitureStoreContext context, TokenValidationParameters tokenValidationParameters, ILogger<AuthenticationController> logger)
         {
             _userManager = userManager;
             _jwtConfig = jwtConfig.Value;
             _emailSender = emailSender;
             _context = context;
             _tokenValidationParameters = tokenValidationParameters;
+            _logger = logger;
         }
 
         [HttpPost("Registration")]
         public async Task<IActionResult> Register([FromBody] UserRegistrationRequestDto request)
         {
+            _logger.LogWarning("debug");
             if (!ModelState.IsValid) return BadRequest();
 
             //verify if email exist
