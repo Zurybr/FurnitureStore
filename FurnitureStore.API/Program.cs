@@ -11,8 +11,8 @@ using Microsoft.OpenApi.Models;
 using NLog;
 using NLog.Web;
 
-var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
-logger.Debug("debug");
+//var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+//logger.Debug("debug");
 try
 {
     var builder = WebApplication.CreateBuilder(args);
@@ -66,8 +66,8 @@ try
     builder.Services.AddSingleton<IEmailSender, EmaiService>();
 
     //Nlog
-    builder.Logging.ClearProviders();
-    builder.Host.UseNLog();
+    //builder.Logging.ClearProviders();
+    //builder.Host.UseNLog();
 
     var key = Encoding.ASCII.GetBytes((builder.Configuration.GetSection("JwtConnfig:Secret").Value));
     var tokenValidationParameters = new TokenValidationParameters()
@@ -99,11 +99,8 @@ try
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-    }
+    app.UseSwagger();
+    app.UseSwaggerUI();
 
     app.UseHttpsRedirection();
 
@@ -117,7 +114,7 @@ try
 }
 catch (Exception e)
 {
-    logger.Error(e, "There has been an error");
+    //logger.Error(e, "There has been an error");
     throw;
 }
 finally
